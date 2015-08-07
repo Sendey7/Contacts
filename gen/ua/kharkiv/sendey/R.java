@@ -73,6 +73,9 @@ public final class R {
         public static final int det_btn_del=0x7f06000d;
         public static final int det_delete_contact=0x7f06000e;
         public static final int empty=0x7f06000a;
+        public static final int err_email=0x7f060011;
+        public static final int err_first_name=0x7f060010;
+        public static final int err_phone=0x7f06000f;
         public static final int ins_btn_save=0x7f060007;
         public static final int ins_contact_add=0x7f060008;
         public static final int ins_email_field=0x7f060005;

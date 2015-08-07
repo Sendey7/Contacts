@@ -14,6 +14,8 @@ import android.widget.Toast;
  * Отображение полной информации о выбранном контакте
  */
 public class DetailsActivity extends Activity implements OnClickListener {
+    public static final int CONTACT_REMOVED = 1;
+
     EditText etFirstNameDet;
     EditText etLastNameDet;
     EditText etEmailDet;
@@ -48,10 +50,7 @@ public class DetailsActivity extends Activity implements OnClickListener {
         
         btnDelete = (Button) findViewById(R.id.btnDelete);
         btnDelete.setOnClickListener(this);
-    }
-    
-    @Override
-    protected void onStart() {
+        
         /* Открываем подключение к БД */
         db = new DataBase(this);
         db.open();
@@ -66,23 +65,21 @@ public class DetailsActivity extends Activity implements OnClickListener {
         etFirstNameDet.setText(cursor.getString(FirstNameDetIndex));
         etLastNameDet.setText(cursor.getString(LastNameDetIndex));
         etEmailDet.setText(cursor.getString(EmailDetIndex));
-        etPhoneDet.setText(cursor.getString(PhoneDetIndex));
-        super.onStart();
-    }
-    
-    @Override
-    protected void onPause() {
+        etPhoneDet.setText((cursor.getInt(PhoneDetIndex) == 0
+                            ? "" : cursor.getString(PhoneDetIndex)));
+        
         /* Закрываем подключение к БД */
         cursor.close();
         db.close();
-        super.onPause();
     }
     
     @Override
     public void onClick(View v) {
 
         /* Удаляем запись из БД */
+        db.open();
         db.delRec(Long.parseLong(id));
+        db.close();
         
         etFirstNameDet.setText("");
         etLastNameDet.setText("");
@@ -95,6 +92,7 @@ public class DetailsActivity extends Activity implements OnClickListener {
               Toast.LENGTH_SHORT).show();
         
         /* Завершаем работу activity */
+        setResult(CONTACT_REMOVED, null);
         finish();
     }
 }

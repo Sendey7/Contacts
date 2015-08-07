@@ -13,12 +13,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
+import static ua.kharkiv.sendey.DetailsActivity.CONTACT_REMOVED;
 
 /*
  * Отображение списка контактов, выбор контакта
  */
 public class SelectFragment extends ListFragment
                             implements LoaderCallbacks<Cursor> {
+    public static final int ACTIVITY_REQUEST_CODE = 1;
+    
     SimpleCursorAdapter scAdapter;
     DataBase db;
     
@@ -29,9 +32,7 @@ public class SelectFragment extends ListFragment
         View rootView = inflater.inflate(R.layout.fragment_select,
                         container, false);
         
-        /* Открываем подключение к БД */
         db = new DataBase(getActivity());
-        db.open();
         
         /* Соответствие полей БД и полей элемента списка */
         String[] from = new String[] {DataBase.COLUMN_F_NAME,
@@ -58,23 +59,16 @@ public class SelectFragment extends ListFragment
         /* Вызываем activity для отображение деталей контакта */
         Intent intent = new Intent(getActivity(), DetailsActivity.class); 
         intent.putExtra("id", Long.toString(id));
-        startActivity(intent);
+        /* Ждем от activity результат - удален ли контакт */
+        startActivityForResult(intent, ACTIVITY_REQUEST_CODE);
     }
     
+    /* Обрабатываем полученный от activity результат */
     @Override
-    public void onPause() {
-        /* Закрываем подключение к БД */
-        db.close();
-        super.onPause();
-    }
-    
-    @Override
-    public void onResume() {
-        /* Открываем подключение к БД */
-        db = new DataBase(getActivity());
-        db.open();
-        getActivity().getSupportLoaderManager().getLoader(0).forceLoad();
-        super.onResume();
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode == CONTACT_REMOVED) {
+            getActivity().getSupportLoaderManager().getLoader(0).forceLoad();
+        }
     }
     
     @Override
@@ -86,6 +80,9 @@ public class SelectFragment extends ListFragment
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
         scAdapter.swapCursor(cursor);
+        
+        /* Закрываем подключение к БД */
+        db.close();
     }
     
     @Override
@@ -103,6 +100,9 @@ public class SelectFragment extends ListFragment
         /* Получаем данные из БД в фоне */
         @Override
         public Cursor loadInBackground() {
+        	
+            /* Открываем подключение к БД */
+            db.open();
             Cursor cursor = db.getAllData();
             return cursor;
         }

@@ -16,5 +16,8 @@
     <string name="tab_insert">Insert</string>
     <string name="det_btn_del">Delete</string>
     <string name="det_delete_contact">Contact removed</string>
+    <string name="err_phone">Incorrect Phone number</string>
+    <string name="err_first_name">First Name is required</string>
+    <string name="err_email">Email is not correct</string>
 
 </resources>

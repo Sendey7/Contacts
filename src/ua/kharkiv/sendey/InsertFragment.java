@@ -1,6 +1,7 @@
 package ua.kharkiv.sendey;
 
-import android.content.ContentValues;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -28,9 +29,7 @@ public class InsertFragment extends Fragment implements OnClickListener {
         View rootView = inflater.inflate(R.layout.fragment_insert,
                                          container, false);
         
-        /* Открываем подключение к БД */
         db = new DataBase(getActivity());
-        db.open();
         
         etFirstName = (EditText) rootView.findViewById(R.id.etFirstName);
         etLastName = (EditText) rootView.findViewById(R.id.etLastName);
@@ -44,52 +43,67 @@ public class InsertFragment extends Fragment implements OnClickListener {
     }
     
     @Override
-    public void onPause() {
-        /* Закрываем подключение к БД */
-        db.close();
-        super.onPause();
-    }
-    
-    @Override
-    public void onResume() {
-        /* Открываем подключение к БД */
-        db = new DataBase(getActivity());
-        db.open();
-        super.onResume();
-    }
-    
-    @Override
     public void onClick(View v) {
+        String firstName;
+        String lastName;
+        String email;
+        long phone = 0;
+        boolean valid = true;
     
-        /* Создаем объект для данных */
-        ContentValues cv = new ContentValues();
+        /* Получаем данные из полей ввода и проверяем корректность ввода*/
+        firstName = etFirstName.getText().toString();
+        if (firstName.isEmpty()) {
+            etFirstName.setError(getResources()
+                                .getString(R.string.err_first_name));
+            valid = false;
+        }
         
-        /* Получаем данные из полей ввода */
-        String firstName = etFirstName.getText().toString();
-        String lastName = etLastName.getText().toString();
-        String email = etEmail.getText().toString();
-        long phone = Long.parseLong(etPhone.getText().toString());
+        lastName = etLastName.getText().toString();
         
-        /* Подготовим данные для вставки */
-        cv.put("flirst_name", firstName);
-        cv.put("ast_name", lastName);
-        cv.put("email", email);
-        cv.put("phone", phone);
+        email = etEmail.getText().toString();
+        Pattern p = Pattern
+               .compile("[a-zA-Z][\\w]*@([a-z]{2,}).([a-z]{2,}).?[a-z]{2,3}");
+        Matcher m = p.matcher(email);
+        boolean isEmail = m.matches();
+        if (!isEmail) {
+        	etEmail.setError(getResources()
+                                .getString(R.string.err_email));
+            valid = false;
+        }
         
-        /* Добавляем запись в БД */
-        db.addRec(firstName, lastName, email, phone);
+        try { 
+            phone = (etPhone.getText().toString().isEmpty()
+            		?0
+            		:Long.parseLong(etPhone.getText().toString()));
+        } catch (NumberFormatException e) { 
+            etPhone.setError(getResources()
+                            .getString(R.string.err_phone));
+            valid = false; 
+        } 
         
-        /* Обновляем список контактов */
-        getActivity().getSupportLoaderManager().getLoader(0).forceLoad();
-        
-        etFirstName.setText("");
-        etLastName.setText("");
-        etEmail.setText("");
-        etPhone.setText("");
-        
-        /* Выводим всплывающую подсказку */
-        Toast.makeText(getActivity(),
-              getResources().getString(R.string.ins_contact_add),
-              Toast.LENGTH_SHORT).show();
+        if (valid) {
+            
+            /* Открываем подключение к БД */
+            db.open();
+            
+            /* Добавляем запись в БД */
+            db.addRec(firstName, lastName, email, phone);
+            
+            /* Закрываем подключение к БД */
+            db.close();
+            
+            /* Обновляем список контактов */
+            getActivity().getSupportLoaderManager().getLoader(0).forceLoad();
+            
+            etFirstName.setText("");
+            etLastName.setText("");
+            etEmail.setText("");
+            etPhone.setText("");
+            
+            /* Выводим всплывающую подсказку */
+            Toast.makeText(getActivity(),
+                  getResources().getString(R.string.ins_contact_add),
+                  Toast.LENGTH_SHORT).show();
+        }
     }
 }
