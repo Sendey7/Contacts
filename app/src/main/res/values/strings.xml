@@ -1,0 +1,22 @@
+<resources>
+    <string name="hello_world">Hello world!</string>
+    <string name="app_name">Contacts</string>
+
+    <string name="title_activity_main">Contacts</string>
+    <string name="action_settings">Settings</string>
+    <string name="ins_name_field">First Name:</string>
+    <string name="ins_last_name_field">Last Name:</string>
+    <string name="ins_email_field">E-mail:</string>
+    <string name="ins_phone_field">Phone:</string>
+    <string name="ins_btn_save">Save</string>
+    <string name="ins_contact_add">Contact is added</string>
+    <string name="title_activity_details">Contact details</string>
+    <string name="empty">List empty</string>
+    <string name="tab_select">Select</string>
+    <string name="tab_insert">Insert</string>
+    <string name="det_btn_del">Delete</string>
+    <string name="det_delete_contact">Contact removed</string>
+    <string name="err_phone">Incorrect Phone number</string>
+    <string name="err_first_name">First Name is required</string>
+    <string name="err_email">Email is not correct</string>
+</resources>
