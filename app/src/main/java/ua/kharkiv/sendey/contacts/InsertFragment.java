@@ -61,14 +61,16 @@ public class InsertFragment extends Fragment implements View.OnClickListener {
         lastName = etLastName.getText().toString();
 
         email = etEmail.getText().toString();
-        Pattern p = Pattern
-                .compile("[a-zA-Z][\\w]*@[a-z]{2,}.[a-z]{2,}(.[a-z]{2,3})?");
-        Matcher m = p.matcher(email);
-        boolean isEmail = m.matches();
-        if (!isEmail) {
-            etEmail.setError(getResources()
-                    .getString(R.string.err_email));
-            valid = false;
+        if (!email.isEmpty()) {
+            Pattern p = Pattern
+                       .compile("[a-zA-Z][\\w]*@[a-z]{2,}.[a-z]{2,}(.[a-z]{2,3})?");
+            Matcher m = p.matcher(email);
+            boolean isEmail = m.matches();
+            if (!isEmail) {
+                etEmail.setError(getResources()
+                        .getString(R.string.err_email));
+                valid = false;
+            }
         }
 
         try {
